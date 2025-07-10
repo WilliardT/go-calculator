@@ -98,6 +98,22 @@ func patchCalculation(c echo.Context) error {
 	return c.JSON(http.StatusBadRequest, map[string]string{"error": "Calculation not found"})
 }
 
+func deleteCalculation (c echo.Context) error {
+	id := c.Param("id")
+
+	for i, calculation := range calculations {
+		if calculation.ID == id {
+			// временно, пока данные в храняться в slice calculations
+			calculations = append(calculations[:i], calculations[i+1:]...)
+			
+			//return c.JSON(http.StatusOK, map[string]string{"message": "Calculation deleted"})
+			return c.NoContent(http.StatusNoContent)
+		}
+	}
+
+	return c.JSON(http.StatusBadRequest, map[string]string{"error": "Calculation not found"})
+}
+
 func main() {
 	fmt.Println("Hello, world")
 	fmt.Println(math.Pi)
@@ -111,6 +127,8 @@ func main() {
 	e.POST("/calculations", postCalculation)
 
 	e.PATCH("/calculations/:id", patchCalculation)
+
+	e.DELETE("/calculations/:id", deleteCalculation)
 	
 	e.Start("localhost:8080")
 }
